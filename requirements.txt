@@ -1,0 +1,5 @@
+pywinstyles
+pytesseract
+pyautogui
+PIL
+AutoHotkey v2.0
