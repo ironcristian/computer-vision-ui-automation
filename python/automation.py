@@ -22,6 +22,7 @@ import constants
 pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
 screen_width, screen_height = pyautogui.size()
+ahk_process = None
 
 
 # ==========================
@@ -36,13 +37,14 @@ def start_player_setup():
 
 
 def start_ahk_script():
-    subprocess.Popen(
+    global ahk_process
+
+    ahk_process = subprocess.Popen(
     [
         r"C:\Program Files\AutoHotkey\v2\AutoHotkey64.exe",
         "../ahk/main.ahk"
     ]
 )
-
 
 
 def focus_roblox_window():
@@ -105,10 +107,10 @@ def find_player_portal_button():
                 image,
                 config="--psm 7" # This means single line. It makes it easier for tesseract to detect the word
             )
-            print(text)
             if text.strip().lower() == "travel":
                 x, y = (portal["button_coordinates"][0] / 1920), (portal["button_coordinates"][1] / 1080)
                 save_portal_coordinates(x, y)
+                print(text)
                 print("Located portal travel button.")
                 break
             else:
@@ -194,6 +196,29 @@ def take_screenshot_and_analyze_egg():
             return False
 
 
+def auto_run_entered_check(zone):
+    time.sleep(3)
+    with mss.MSS() as sct:
+        screen = {
+            "left": int((1273 / 1920) * screen_width),
+            "top": int((778 / 1080) * screen_height),
+            "width": int(((1311 - 1273) / 1920) * screen_width),
+            "height": int(((816 - 778) / 1080) * screen_height)
+        }
+
+        screenshot = sct.grab(screen)
+
+        image = Image.frombytes(
+            "RGB",
+            screenshot.size,
+            screenshot.rgb # This is the actual raw pixel data. Example: (205, 54, 23)
+        )
+
+        x_screenshot = Image.open("../Auto_Rebirther_Screenshots/X_Rebirth_Screenshot_Permanent/x_symbol.png")
+
+        if not image_similarity(image, x_screenshot):
+            send_command(zone)
+
 # ==========================
 # AutoHotkey Communication
 # ==========================
@@ -214,14 +239,13 @@ def clear_command_and_close_ahk():
     with open("../command.txt", "w") as f:
         pass
 
-    send_command("EXIT")
+    if ahk_process and ahk_process.poll() is None:
+        ahk_process.terminate()
 
 
 # ==========================
 # Automation State
 # ==========================
-
-current_level = ""
 
 last_level_change = time.time()
 last_xp_claim = time.time()
@@ -234,7 +258,7 @@ last_egg_check = time.time()
 # ==========================
 
 def begin_automation(zone):
-
+    
     global last_level_change, last_xp_claim, last_image_analysis, last_egg_check
 
     start_player_setup()
@@ -246,6 +270,7 @@ def begin_automation(zone):
 
     print(f"Setting up {zone}")
     send_command(zone)
+    auto_run_entered_check(zone) # Checks if the walk to autorun worked. If not it sends the command again
     print("Setup done")
 
 
@@ -260,6 +285,7 @@ def begin_automation(zone):
 
                 print("Claiming Egg")
                 send_command("Claim_EGG")
+                auto_run_entered_check(zone)
                 print("Claimed Egg")
 
             last_egg_check = current_time
@@ -281,6 +307,7 @@ def begin_automation(zone):
 
                     print("Rebirthing")
                     send_command("Rebirth")
+                    auto_run_entered_check(zone)
                     print("Rebirthed")
 
                     last_level_change = current_time
