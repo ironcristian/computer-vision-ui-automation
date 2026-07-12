@@ -3,11 +3,13 @@
 ;By the way you need to be fully zoomed out of your screen for this to work.
 
 
-
+SendMode "Event"
 
 portal_button_x := IniRead("portal_coordinates.ini", "Portal", "portal_button_x") * A_ScreenWidth
 portal_button_y := IniRead("portal_coordinates.ini", "Portal", "portal_button_y") * A_ScreenHeight
-SendMode "Event"
+
+current_zone := ""
+
 F8::
 {
     FileOpen("../command.txt", "w").Close()
@@ -18,6 +20,7 @@ F8::
 
 Loop
 {
+    global current_zone
     if FileExist("../command.txt")
     {
         command := Trim(FileRead("../command.txt"))
@@ -36,20 +39,15 @@ Loop
             Claim_XP()
             ClearCommand()
         }
-        else if command = "EXIT"
-        {
-            FileOpen("../command.txt", "w").Close() ; I know python already clears the file on exit. This is just in case python crashes, as atexit doesnt work in that case.
-            FileDelete("../done.txt")
-            ExitApp
-        }
         else
         {
+            current_zone := command ; Command in this case will be a zone name
             Choose_Walk(command)
             ClearCommand()
         }
     }
 
-    Sleep 50    ; Added smal delay to reduce CPU busy waiting
+    Sleep 50    ; Added small delay to reduce CPU busy waiting
 }
 
 ClearCommand()
@@ -58,11 +56,17 @@ ClearCommand()
     FileOpen("../done.txt", "w").Close()
 }
 
+Zoom_Out()
+{
+    Send "{WheelDown 70}"
+    Sleep 200
+}
+
 
 Rebirth() 
 {   
     ; In this version variables need to be declared global inside functions unless defined INSIDE the function
-    global CLOSE_X, CLOSE_Y, YES_X, YES_Y, REBIRTH_BUTTON_X, REBIRTH_BUTTON_Y, REBIRTH_PRICE_X, REBIRTH_PRICE_Y
+    global current_zone, CLOSE_X, CLOSE_Y, YES_X, YES_Y, REBIRTH_BUTTON_X, REBIRTH_BUTTON_Y, REBIRTH_PRICE_X, REBIRTH_PRICE_Y
     MouseClick("Left", CLOSE_X, CLOSE_Y)     ;Click Close button
     Sleep 1500
 
@@ -75,7 +79,7 @@ Rebirth()
     MouseClick("Left", REBIRTH_PRICE_X, REBIRTH_PRICE_Y)     ;Click rebirth price button
     Sleep 2000
 
-    Lost_City_Walk()
+    Walk_To(current_zone)
 }
 
 
@@ -88,7 +92,7 @@ Claim_XP()
 
 Claim_EGG()
 {
-    global CLOSE_X, CLOSE_Y, YES_X, YES_Y, EGG_NOTIFICATION_X, EGG_NOTIFICATION_Y, CLAIM_BUTTON_X, CLAIM_BUTTON_Y, X_BUTTON_X, X_BUTTON_Y
+    global current_zone, CLOSE_X, CLOSE_Y, YES_X, YES_Y, EGG_NOTIFICATION_X, EGG_NOTIFICATION_Y, CLAIM_BUTTON_X, CLAIM_BUTTON_Y, X_BUTTON_X, X_BUTTON_Y
     MouseClick("Left", CLOSE_X, CLOSE_Y)     ;Click Close button
     Sleep 1000
 
@@ -102,9 +106,12 @@ Claim_EGG()
     Sleep 4000
 
     MouseClick("Left", X_BUTTON_X, X_BUTTON_Y)     ;Click X
+    Sleep 2000
+
+    MouseClick("Left", X_BUTTON_X, X_BUTTON_Y)     ;Click X
     Sleep 1000
 
-    Lost_City_Walk()
+    Walk_To(current_zone)
 }
 
 
@@ -113,6 +120,7 @@ Claim_EGG()
 ;----------------------------------------------------------------------------------
 Lost_City_Walk()
 {
+    Zoom_Out()
     global YES_X, YES_Y
     ;Walk to Auto-Run area
     Sleep 1000
@@ -134,6 +142,7 @@ Lost_City_Walk()
 ;Teleports the player to Lost City zone
 Lost_City_Portal()
 {
+    
     global portal_button_x, portal_button_y, LOST_CITY_BUTTON_X, LOST_CITY_BUTTON_Y, TRAVEL_BUTTON_X, TRAVEL_BUTTON_Y, YES_X, YES_Y
 
     Sleep 1000
@@ -157,6 +166,7 @@ Lost_City_Portal()
 ;----------------------------------------------------------------------------------
 Emerald_Hill_Walk()
 {
+    Zoom_Out()
     global YES_X, YES_Y
 
     Sleep 1000
@@ -196,18 +206,123 @@ Emerald_Hill_Portal()
 
 }
 
-;-----------------------------------------------------------
-;-----------------------------------------------------------
-;-----------------------------------------------------------
+
+;----------------------------------------------------------------------------------
+;--------------GEEN HILL WALK AND TELEPORTATION FUNCTIONS--------------------------
+;----------------------------------------------------------------------------------
+
+
+Green_Hill_Walk()
+{
+    Zoom_Out()
+    global YES_X, YES_Y
+
+    Sleep 1000
+    Send "{d down}"
+    Sleep 800
+    Send "{d up}"
+    Sleep 200
+
+    Sleep 200
+    Send "{s down}"
+    Sleep 1300
+    Send "{s up}"
+    Sleep 300
+
+    Send "{d down}"
+    Sleep 1800
+    Send "{d up}"
+
+    Send "{s down}"
+    Sleep 2500
+    Send "{s up}"
+    Sleep 500
+
+    MouseClick("Left", YES_X, YES_Y)      ;Click Yes
+    Sleep 2000
+}
+
+Green_Hill_Portal()
+{
+    
+    global portal_button_x, portal_button_y, GREEN_HILL_BUTTON_X, GREEN_HILL_BUTTON_Y, TRAVEL_BUTTON_X, TRAVEL_BUTTON_Y, YES_Y, YES_X
+
+    MouseClick("Left", portal_button_x, portal_button_y)    ;Click the portal travel button
+    Sleep 1000
+
+    MouseClick("Left", GREEN_HILL_BUTTON_X, GREEN_HILL_BUTTON_Y)
+    Sleep 1000
+
+    MouseClick("Left", TRAVEL_BUTTON_X, TRAVEL_BUTTON_Y)
+    Sleep 1000
+
+    MouseClick("Left", YES_X, YES_Y)
+    Sleep 10000
+
+}
+
+
+;----------------------------------------------------------------------------------
+;--------------GEEN HILL WALK AND TELEPORTATION FUNCTIONS--------------------------
+;----------------------------------------------------------------------------------
 
 
 
+Hill_Top_Walk()
+{
+    Zoom_Out()
+    global YES_X, YES_Y
+
+    Sleep 1000
+    Send "{w down}"
+    Sleep 400
+    Send "{w up}"
+    Sleep 200
+
+    Send "{a down}"
+    Sleep 1500
+    Send "{a up}"
+    Sleep 400
+
+    Send "{w down}"
+    Sleep 300
+    Send "{w up}"
+    Sleep 400
+
+    Send "{a down}"
+    Sleep 1000
+    Send "{a up}"
+    Sleep 400
+
+    MouseClick("Left", YES_X, YES_Y)      ;Click Yes
+    Sleep 2000
+}
+
+Hill_Top_Portal()
+{
+    global portal_button_x, portal_button_y, HILL_TOP_BUTTON_X, HILL_TOP_BUTTON_Y, TRAVEL_BUTTON_X, TRAVEL_BUTTON_Y, YES_Y, YES_X
+
+    MouseClick("Left", portal_button_x, portal_button_y)    ;Click the portal travel button
+    Sleep 1000
+
+    MouseClick("Left", HILL_TOP_BUTTON_X, HILL_TOP_BUTTON_Y)
+    Sleep 1000
+
+    MouseClick("Left", TRAVEL_BUTTON_X, TRAVEL_BUTTON_Y)
+    Sleep 1000
+
+    MouseClick("Left", YES_X, YES_Y)
+    Sleep 10000
+}
+
+
+; Teleport o chosen zone and walk to auto-run
 Choose_Walk(zone)
 {
     if zone = "Green Hill"
     {
-        ;Green_Hill_Portal()
-        ;Green_Hill_Walk()
+        Green_Hill_Portal()
+        Green_Hill_Walk()
     }
     else if zone = "Emerald Hill"
     {
@@ -219,14 +334,32 @@ Choose_Walk(zone)
         Lost_City_Portal()
         Lost_City_Walk()
     }
-    else if zone = "Hill Top"w
+    else if zone = "Hill Top"
     {
-        ;Hill_Top_Portal()
-        ;Hill_Top_Walk()
+        Hill_Top_Portal()
+        Hill_Top_Walk()
     }
 
+}
 
-
-
+; Walk to auto-run area in chosen zone
+Walk_to(zone)
+{
+    if zone = "Green Hill"
+    {
+        Green_Hill_Walk()
+    }
+    else if zone = "Emerald Hill"
+    {
+        Emerald_Hill_Walk()
+    }
+    else if zone = "Lost City"
+    {
+        Lost_City_Walk()
+    }
+    else if zone = "Hill Top"
+    {
+        Hill_Top_Walk()
+    }
 
 }
