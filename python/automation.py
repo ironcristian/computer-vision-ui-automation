@@ -1,6 +1,5 @@
 
 import mss
-import pytesseract
 from PIL import Image, ImageChops
 import time
 import os
@@ -11,6 +10,7 @@ import win32gui
 import win32con
 import configparser
 import subprocess
+import cv2
 
 import constants
 
@@ -18,8 +18,6 @@ import constants
 # ==========================
 # Configuration
 # ==========================
-
-pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
 screen_width, screen_height = pyautogui.size()
 ahk_process = None
@@ -72,49 +70,57 @@ def save_portal_coordinates(x, y):
     with open("../ahk/portal_coordinates.ini", "w") as f:
         portal_coordinate_file.write(f) # Here we dont use f.write because configparses has its own built in ".write" function that automatically write the INI file syntax for you,
 
-
 def find_player_portal_button():
+
     focus_roblox_window()
-    for portal in constants.POSSIBLE_PORTAL_COORDINATES:
-        left = int(portal["left_ratio"] * screen_width)
-        top = int(portal["top_ratio"] * screen_height)
-        width = int(portal["width_ratio"] * screen_width)
-        height = int(portal["height_ratio"] * screen_height)
+
+    template = cv2.imread("../Auto_Rebirther_Screenshots/Portal_Button_Screenshot_Permanent/portal_button.png")
+
+    with mss.MSS() as sct:
 
         screen = {
-            "left": left,
-            "top": top,
-            "width": width,
-            "height": height
+            "left": 0,
+            "top": int(constants.POSSIBLE_PORTAL_LOCATION_HEIGHT_RATIO * screen_height),
+            "width": screen_width,
+            "height": screen_height - int(constants.POSSIBLE_PORTAL_LOCATION_HEIGHT_RATIO * screen_height)
         }
 
-        with mss.MSS() as sct:
+        screenshot = sct.grab(screen) # This returns a screenshot.Screenshot objects containing varios data about the iamge.
 
-            screenshot = sct.grab(screen)
+        screenshot_pixels = np.array(screenshot) # The way np can conver the screnshot to an array of pixel values it because the screenshot object provides a way to be converted into an array. {__array__ or maybe __buffer__}
 
-            image = Image.frombytes(
-                "RGB",
-                screenshot.size,
-                screenshot.rgb
-            )
+        # Remove the alpha channel because mss returns BGRA and also we dont want transparency to affect out search. If we move in game that could affect the pixels with alpha in them.
+        screenshot_pixels = cv2.cvtColor(
+            screenshot_pixels,
+            cv2.COLOR_BGRA2BGR
+        )
 
-            image = image.resize(
-                (image.width * 4, image.height * 4),
-                Image.Resampling.NEAREST
-            )
+        result = cv2.matchTemplate( # This returns a grid/matrix of all points that it checked and its similarity value. Out chosen comparison method {TM_CCOEFF_NORMED} returns 1.0 if its a perfect match and 0.0 if its not.
+            screenshot_pixels,
+            template,
+            cv2.TM_CCOEFF_NORMED
+        )
 
-            text = pytesseract.image_to_string(
-                image,
-                config="--psm 7" # This means single line. It makes it easier for tesseract to detect the word
-            )
-            if text.strip().lower() == "travel":
-                x, y = (portal["button_coordinates"][0] / 1920), (portal["button_coordinates"][1] / 1080)
-                save_portal_coordinates(x, y)
-                print(text)
-                print("Located portal travel button.")
-                break
-            else:
-                continue
+
+        # minMaxLoc returns the min_value, max_value, where the minimum happened, and where the maximum happened.
+        # Since we only care the best score we only take the 2n and 4th value that the method returns and we name the 2nd {confidence} because that is how confident cv2 is that its the same picture
+        _, confidence, _, location = cv2.minMaxLoc(result) 
+        # Also. Location returns the top left corner of the match it found from the {screen} area we checked. So if we checked 1920, 90 it could return 1300, 34 But those obviouslt arent the screen coordinates.
+        # We need to turn them into the real screen coordinates.
+
+
+        if confidence > 0.90:
+            real_x = location[0] # location[0] is the x value of the tuple location
+            real_y = location[1] + screen["top"] # Here we add the y coord of the small area we checked with the y value of all the screen size up to the heigth of the image. to make easier to understand.
+            # Imagine this. Forget about the coords of the pic. Say we find the portal at  1050. And the portal spans from 1050 down to 1060. Now lets say to make cv2 do less work we first crop the area where,
+            # We know the image will be. We know it will be at the bottom somewhere anywhere along the x axis but always after y = 1040. Now cropped region will be 1920, 40. When we run cv2 on this image,
+            # It will return something like 1500, 10. Because top of image starts at y = 0. Now to get the real coordinates back we need to add 10 + 1040. So now we get the real screen coordinates
+ 
+            save_portal_coordinates(real_x / 1920, real_y / 1080)
+        else:
+            print("Travel button not found. Do you have Fast Travel activated in the game settings?")
+
+
 
 
 # ==========================
