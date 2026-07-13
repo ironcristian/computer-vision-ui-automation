@@ -145,15 +145,14 @@ Lost_City_Portal()
     
     global portal_button_x, portal_button_y, LOST_CITY_BUTTON_X, LOST_CITY_BUTTON_Y, TRAVEL_BUTTON_X, TRAVEL_BUTTON_Y, YES_X, YES_Y
 
-    Sleep 1000
     MouseClick("Left", portal_button_x, portal_button_y)     ;Click the portal travel button
-    Sleep 1000
+    Sleep 300
 
     MouseClick("Left", LOST_CITY_BUTTON_X, LOST_CITY_BUTTON_Y)  ;Click the zone we want to go to
-    Sleep 1000
+    Sleep 300
 
     MouseClick("Left", TRAVEL_BUTTON_X, TRAVEL_BUTTON_Y)    ;Click the green travel button that will teleport the player there
-    Sleep 1000
+    Sleep 300
 
     MouseClick("Left", YES_X, YES_Y)
     Sleep 10000
@@ -193,13 +192,13 @@ Emerald_Hill_Portal()
     global portal_button_x, portal_button_y, EMERALD_HILL_BUTTON_X, EMERALD_HILL_BUTTON_Y, TRAVEL_BUTTON_X, TRAVEL_BUTTON_Y, YES_Y, YES_X
 
     MouseClick("Left", portal_button_x, portal_button_y)    ;Click the portal travel button
-    Sleep 1000
+    Sleep 300
 
     MouseClick("Left", EMERALD_HILL_BUTTON_X, EMERALD_HILL_BUTTON_Y)  ;Click the zone we want to go to
-    Sleep 1000
+    Sleep 300
 
     MouseClick("Left", TRAVEL_BUTTON_X, TRAVEL_BUTTON_Y)    ;Click the green travel button that will teleport the player there
-    Sleep 1000
+    Sleep 300
 
     MouseClick("Left", YES_X, YES_Y)
     Sleep 10000
@@ -248,13 +247,13 @@ Green_Hill_Portal()
     global portal_button_x, portal_button_y, GREEN_HILL_BUTTON_X, GREEN_HILL_BUTTON_Y, TRAVEL_BUTTON_X, TRAVEL_BUTTON_Y, YES_Y, YES_X
 
     MouseClick("Left", portal_button_x, portal_button_y)    ;Click the portal travel button
-    Sleep 1000
+    Sleep 300
 
     MouseClick("Left", GREEN_HILL_BUTTON_X, GREEN_HILL_BUTTON_Y)
-    Sleep 1000
+    Sleep 300
 
     MouseClick("Left", TRAVEL_BUTTON_X, TRAVEL_BUTTON_Y)
-    Sleep 1000
+    Sleep 300
 
     MouseClick("Left", YES_X, YES_Y)
     Sleep 10000
@@ -303,13 +302,13 @@ Hill_Top_Portal()
     global portal_button_x, portal_button_y, HILL_TOP_BUTTON_X, HILL_TOP_BUTTON_Y, TRAVEL_BUTTON_X, TRAVEL_BUTTON_Y, YES_Y, YES_X
 
     MouseClick("Left", portal_button_x, portal_button_y)    ;Click the portal travel button
-    Sleep 1000
+    Sleep 300
 
     MouseClick("Left", HILL_TOP_BUTTON_X, HILL_TOP_BUTTON_Y)
-    Sleep 1000
+    Sleep 300
 
     MouseClick("Left", TRAVEL_BUTTON_X, TRAVEL_BUTTON_Y)
-    Sleep 1000
+    Sleep 300
 
     MouseClick("Left", YES_X, YES_Y)
     Sleep 10000
