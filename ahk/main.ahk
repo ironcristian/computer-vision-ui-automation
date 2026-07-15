@@ -22,31 +22,41 @@ Loop
 {
     global current_zone
     if FileExist("../command.txt")
-    {
-        command := Trim(FileRead("../command.txt"))
-        if command = "Rebirth"
         {
-            Rebirth()
-            ClearCommand()
-        }
-        else if command = "Claim_EGG"
-        {
-            Claim_EGG()
-            ClearCommand()
-        }
-        else if command = "Claim_XP"
-        {
-            Claim_XP()
-            ClearCommand()
-        }
-        else
-        {
-            current_zone := command ; Command in this case will be a zone name
-            Choose_Walk(command)
-            ClearCommand()
-        }
-    }
+            command := Trim(FileRead("../command.txt"))
 
+        if command != ""
+        {
+
+            if command = "Rebirth"
+            {
+                Rebirth()
+                ClearCommand()
+            }
+            else if command = "Claim_EGG"
+            {
+                Claim_EGG()
+                ClearCommand()
+            }
+            else if command = "Claim_XP"
+            {
+                Claim_XP()
+                ClearCommand()
+            }
+            else if command = "Click_Portal"
+            {
+                Click_Portal()
+                ClearCommand()
+            }
+            else
+            {
+                current_zone := command ; Command in this case will be a zone name
+                Choose_Walk(command)
+                ClearCommand()
+            }
+        }
+
+    }
     Sleep 50    ; Added small delay to reduce CPU busy waiting
 }
 
@@ -89,6 +99,16 @@ Claim_XP()
     MouseClick("Left", CLAIM_XP_X, CLAIM_XP_Y)
 }
 
+Click_Portal()
+{
+    global portal_button_x, portal_button_y
+
+    MouseClick("Left", portal_button_x, portal_button_y)     ;Click the portal travel button
+    Sleep 300
+
+}
+
+
 
 Claim_EGG()
 {
@@ -116,7 +136,7 @@ Claim_EGG()
 
 
 ;----------------------------------------------------------------------------------
-;--------------LOST VALLEY WALK AND TELEPORTATION FUNCTIONS------------------------
+;--------------LOST CITY WALK AND TELEPORTATION FUNCTIONS------------------------
 ;----------------------------------------------------------------------------------
 Lost_City_Walk()
 {
@@ -140,13 +160,10 @@ Lost_City_Walk()
 }
 
 ;Teleports the player to Lost City zone
-Lost_City_Portal()
+Lost_City_Portal(next_clicks)
 {
     
-    global portal_button_x, portal_button_y, LOST_CITY_BUTTON_X, LOST_CITY_BUTTON_Y, TRAVEL_BUTTON_X, TRAVEL_BUTTON_Y, YES_X, YES_Y
-
-    MouseClick("Left", portal_button_x, portal_button_y)     ;Click the portal travel button
-    Sleep 300
+    global LOST_CITY_BUTTON_X, LOST_CITY_BUTTON_Y, TRAVEL_BUTTON_X, TRAVEL_BUTTON_Y, YES_X, YES_Y
 
     MouseClick("Left", LOST_CITY_BUTTON_X, LOST_CITY_BUTTON_Y)  ;Click the zone we want to go to
     Sleep 300
@@ -186,14 +203,12 @@ Emerald_Hill_Walk()
 }
 
 ;Teleports the player to the Emerald Hill zone
-Emerald_Hill_Portal()
+Emerald_Hill_Portal(next_clicks)
 {
     
-    global portal_button_x, portal_button_y, EMERALD_HILL_BUTTON_X, EMERALD_HILL_BUTTON_Y, TRAVEL_BUTTON_X, TRAVEL_BUTTON_Y, YES_Y, YES_X
+    global EMERALD_HILL_BUTTON_X, EMERALD_HILL_BUTTON_Y, TRAVEL_BUTTON_X, TRAVEL_BUTTON_Y, YES_Y, YES_X
 
-    MouseClick("Left", portal_button_x, portal_button_y)    ;Click the portal travel button
-    Sleep 300
-
+    
     MouseClick("Left", EMERALD_HILL_BUTTON_X, EMERALD_HILL_BUTTON_Y)  ;Click the zone we want to go to
     Sleep 300
 
@@ -241,13 +256,10 @@ Green_Hill_Walk()
     Sleep 2000
 }
 
-Green_Hill_Portal()
+Green_Hill_Portal(next_clicks)
 {
     
-    global portal_button_x, portal_button_y, GREEN_HILL_BUTTON_X, GREEN_HILL_BUTTON_Y, TRAVEL_BUTTON_X, TRAVEL_BUTTON_Y, YES_Y, YES_X
-
-    MouseClick("Left", portal_button_x, portal_button_y)    ;Click the portal travel button
-    Sleep 300
+    global GREEN_HILL_BUTTON_X, GREEN_HILL_BUTTON_Y, TRAVEL_BUTTON_X, TRAVEL_BUTTON_Y, YES_Y, YES_X
 
     MouseClick("Left", GREEN_HILL_BUTTON_X, GREEN_HILL_BUTTON_Y)
     Sleep 300
@@ -297,7 +309,7 @@ Hill_Top_Walk()
     Sleep 2000
 }
 
-Hill_Top_Portal()
+Hill_Top_Portal(next_clicks)
 {
     global portal_button_x, portal_button_y, HILL_TOP_BUTTON_X, HILL_TOP_BUTTON_Y, TRAVEL_BUTTON_X, TRAVEL_BUTTON_Y, YES_Y, YES_X
 
