@@ -15,6 +15,7 @@ ctk.set_default_color_theme("blue")
 class App(ctk.CTk):
 
     def __init__(self):
+        self.automation_thread = None # This is to check if the thread has been created.
 
         super().__init__()
 
@@ -121,7 +122,7 @@ class App(ctk.CTk):
         # Row 1 because first of all each frames get its own columns and second I already have text in the 0th row
 
         green_hill_button = self.make_button(1, 0, "Green Hill")
-        lost_valley_button = self.make_button(1, 1, "Lost City")
+        lost_valley_button = self.make_button(1, 1, "Lost Valley")
         testing_button = self.make_button(1, 2, "Emerald Hill")
         emerald_hill_button = self.make_button(2, 0, "Hill Top")
         hill_top_button = self.make_button(2, 1, "Speed Jungle")
@@ -137,16 +138,18 @@ class App(ctk.CTk):
     #==================================
 
     def start_zone(self, zone):
-        thread = threading.Thread(
-            target=automation.begin_automation,
-            args=(zone,),
-            # Need to add coma in (zone,) because the threading function internally calls *args so it means {Take this iterable and unpack its contents as separate arguments.
-            # If we had only 1 argument without coma it would take each unpack each letter individually. Adding the coma makes it a tuple and it in fact unpacks each element indiviually,
-            # resulting in the full string being unpacked instead of each letter.
-            daemon=True # Makes such that this child process now die with its parent it the parent process is killed. For example when I press CTRL-C. This is to prevent freezing.
-        )
 
-        thread.start()
+        # if self.automation_thread is not None and self.automation_thread.is_alive():
+            thread = threading.Thread(
+                target=automation.begin_automation,
+                args=(zone,),
+                # Need to add coma in (zone,) because the threading function internally calls *args so it means {Take this iterable and unpack its contents as separate arguments.
+                # If we had only 1 argument without coma it would take each unpack each letter individually. Adding the coma makes it a tuple and it in fact unpacks each element indiviually,
+                # resulting in the full string being unpacked instead of each letter.
+                daemon=True # Makes such that this child process now die with its parent it the parent process is killed. For example when I press CTRL-C. This is to prevent freezing.
+            )
+
+            thread.start()
 
 
     def make_button(self, row_, column_, zone):
