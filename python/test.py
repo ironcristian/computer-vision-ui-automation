@@ -1,27 +1,34 @@
 import mss
 from PIL import Image
 
-SPACE_COLONY_PORTAL = ((934, 176), (990, 236))
-
-with mss.mss() as sct:
-
-    top_left, bottom_right = SPACE_COLONY_PORTAL
-
-    monitor = {
-        "left": top_left[0],
-        "top": top_left[1],
-        "width": bottom_right[0] - top_left[0],
-        "height": bottom_right[1] - top_left[1]
+ZONE_BUTTON_COORDINATES = {
+    "COOL EDGE": {
+        "left": 934,
+        "top": 176,
+        "width": 990 - 934,    # 56
+        "height": 236 - 176    # 60
     }
+}
 
-    screenshot = sct.grab(monitor)
+with mss.MSS() as sct:
+    for zone, coords in ZONE_BUTTON_COORDINATES.items():
 
-    image = Image.frombytes(
-        "RGB",
-        screenshot.size,
-        screenshot.rgb
-    )
+        screen = {
+            "left": coords["left"],
+            "top": coords["top"],
+            "width": coords["width"],
+            "height": coords["height"]
+        }
 
-    image.save("space_colony_portal.png")
+        screenshot = sct.grab(screen)
 
-    print("Saved space_colony_portal.png")
+        image = Image.frombytes(
+            "RGB",
+            screenshot.size,
+            screenshot.rgb
+        )
+
+        filename = f"{zone.replace(' ', '_').lower()}_locked_portal.png"
+        image.save(filename)
+
+        print(f"Saved {filename}")

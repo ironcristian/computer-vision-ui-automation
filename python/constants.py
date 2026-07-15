@@ -74,7 +74,13 @@ ZONE_BUTTON_COORDINATES = {
         "top": 363,
         "width": 732 - 675,    # 57
         "height": 423 - 363    # 60
-    }
+    },
+    "COOL EDGE": {
+        "left": 934,
+        "top": 176,
+        "width": 990 - 934,    # 56
+        "height": 236 - 176    # 60
+    }, 
 }
 
 

@@ -119,7 +119,7 @@ class App(ctk.CTk):
         #Zone Buttons
         #==================================
 
-        # Row 1 because first of all each frames get its own columns and second I already have text in the 0th row
+        # Row 1 because first of all each frames get its own columns and rows and second I already have text in the 0th column.
 
         green_hill_button = self.make_button(1, 0, "Green Hill")
         lost_valley_button = self.make_button(1, 1, "Lost Valley")
