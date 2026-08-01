@@ -1,5 +1,5 @@
 pywinstyles
-pytesseract
 pyautogui
-PIL
+Pillow
 AutoHotkey v2.0
+mss
