@@ -48,6 +48,10 @@ Loop
                 Click_Portal()
                 ClearCommand()
             }
+            else if IsInteger(command) {
+                Page_Change(command)
+                ClearCommand()
+            }
             else
             {
                 current_zone := command ; Command in this case will be a zone name
@@ -104,7 +108,7 @@ Click_Portal()
     global portal_button_x, portal_button_y
 
     MouseClick("Left", portal_button_x, portal_button_y)     ;Click the portal travel button
-    Sleep 300
+    Sleep 1000 ; Add a long delay here so then python doesnt take a screenshot of the portal too fast resulting in an incorrect portal screenshot
 
 }
 
@@ -134,6 +138,30 @@ Claim_EGG()
     Walk_To(current_zone)
 }
 
+Page_Change(page_distance)
+{
+    global NEXT_BUTTON_PORTAL_X, NEXT_BUTTON_PORTAL_Y, BACK_BUTTON_PORTAL_X, BACK_BUTTON_PORTAL_Y
+    
+    if page_distance = 0 {
+        return
+    }
+    else if page_distance > 0 {
+        Loop page_distance 
+        {
+            MouseClick("Left", NEXT_BUTTON_PORTAL_X, NEXT_BUTTON_PORTAL_Y)
+            Sleep 1500
+        }
+    }
+    else if page_distance < 0 {
+        Loop page_distance * -1
+        {
+            MouseClick("Left", BACK_BUTTON_PORTAL_X, BACK_BUTTON_PORTAL_Y)
+            Sleep 1500
+        } 
+    }
+
+
+}
 
 ;----------------------------------------------------------------------------------
 ;--------------LOST CITY WALK AND TELEPORTATION FUNCTIONS------------------------
@@ -150,9 +178,14 @@ Lost_City_Walk()
     Sleep 100
 
     Send "{d down}"
-    Sleep 1800
+    Sleep 1700
     Send "{d up}"
-    Sleep 1000
+    Sleep 200
+
+    Send "{s down}"
+    Sleep 800
+    Send "{s up}"
+    Sleep 200
 
 
     MouseClick("Left", YES_X, YES_Y)      ;Click Yes
@@ -160,7 +193,7 @@ Lost_City_Walk()
 }
 
 ;Teleports the player to Lost City zone
-Lost_City_Portal(next_clicks)
+Lost_City_Portal()
 {
     
     global LOST_CITY_BUTTON_X, LOST_CITY_BUTTON_Y, TRAVEL_BUTTON_X, TRAVEL_BUTTON_Y, YES_X, YES_Y
@@ -187,12 +220,12 @@ Emerald_Hill_Walk()
 
     Sleep 1000
     Send "{d down}"
-    Sleep 1900
+    Sleep 1500
     Send "{d up}"
     Sleep 100
 
     Send "{s down}"
-    Sleep 500
+    Sleep 1000
     Send "{s up}"
     Sleep 1000
 
@@ -203,7 +236,7 @@ Emerald_Hill_Walk()
 }
 
 ;Teleports the player to the Emerald Hill zone
-Emerald_Hill_Portal(next_clicks)
+Emerald_Hill_Portal()
 {
     
     global EMERALD_HILL_BUTTON_X, EMERALD_HILL_BUTTON_Y, TRAVEL_BUTTON_X, TRAVEL_BUTTON_Y, YES_Y, YES_X
@@ -256,7 +289,7 @@ Green_Hill_Walk()
     Sleep 2000
 }
 
-Green_Hill_Portal(next_clicks)
+Green_Hill_Portal()
 {
     
     global GREEN_HILL_BUTTON_X, GREEN_HILL_BUTTON_Y, TRAVEL_BUTTON_X, TRAVEL_BUTTON_Y, YES_Y, YES_X
@@ -309,7 +342,7 @@ Hill_Top_Walk()
     Sleep 2000
 }
 
-Hill_Top_Portal(next_clicks)
+Hill_Top_Portal()
 {
     global portal_button_x, portal_button_y, HILL_TOP_BUTTON_X, HILL_TOP_BUTTON_Y, TRAVEL_BUTTON_X, TRAVEL_BUTTON_Y, YES_Y, YES_X
 
@@ -340,7 +373,7 @@ Choose_Walk(zone)
         Emerald_Hill_Portal()
         Emerald_Hill_Walk()
     }
-    else if zone = "Lost City"
+    else if zone = "Lost Valley"
     {
         Lost_City_Portal()
         Lost_City_Walk()
