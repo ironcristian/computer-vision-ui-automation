@@ -31,6 +31,15 @@ CLAIM_XP_Y := Round((978 / 1080) * screenHeight)
 
 
 
+;Portal {Next} and {Back} button
+NEXT_BUTTON_PORTAL_X := Round((2100/2880) * screenWidth)
+NEXT_BUTTON_PORTAL_Y := Round((742/1620) * screenHeight)
+
+BACK_BUTTON_PORTAL_X := Round((775/2880) * screenWidth)
+BACK_BUTTON_PORTAL_Y := Round((731/1620) * screenHeight)
+
+
+
 ;Egg claim buttons
 EGG_NOTIFICATION_X := Round((189 / 1920) * screenWidth)
 EGG_NOTIFICATION_Y := Round((596 / 1080) * screenHeight)
