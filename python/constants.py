@@ -25,69 +25,70 @@ POSSIBLE_PORTAL_LOCATION_HEIGHT_RATIO = 990 / 1080
 
 
 ZONE_BUTTON_COORDINATES = {
-    "LOST_VALLEY": {
-        "left": 1192,
-        "top": 378,
-        "width": 1240 - 1192,  # 48
-        "height": 420 - 378    # 42
+    "Lost Valley": {
+        "left": 1192 / 1920,
+        "top": 378 / 1080,
+        "width": (1240 - 1192) / 1920,
+        "height": (420 - 378) / 1080
     },
-    "EMERALD_HILL": {
-        "left": 1098,
-        "top": 691,
-        "width": 1142 - 1098,  # 44
-        "height": 728 - 691    # 37
+    "Emerald Hill": {
+        "left": 1098 / 1920,
+        "top": 691 / 1080,
+        "width": (1142 - 1098) / 1920,
+        "height": (728 - 691) / 1080
     },
-    "HILL_TOP": {
-        "left": 678,
-        "top": 385,
-        "width": 726 - 678,    # 48
-        "height": 421 - 385    # 36
-    },
-
-    "SPEED_JUNGLE": {
-        "left": 934,
-        "top": 176,
-        "width": 990 - 934,    # 56
-        "height": 236 - 176    # 60
-    },
-    "NO_PLACE": {
-        "left": 1190,
-        "top": 360,
-        "width": 1247 - 1190,  # 57
-        "height": 422 - 360    # 62
-    },
-    "CYBER_STATION": {
-        "left": 1091,
-        "top": 665,
-        "width": 1148 - 1091,  # 57
-        "height": 724 - 665    # 59
-    },
-    "NEW_YOKE": {
-        "left": 673,
-        "top": 361,
-        "width": 731 - 673,    # 58
-        "height": 425 - 361    # 64
+    "Hill Top": {
+        "left": 678 / 1920,
+        "top": 385 / 1080,
+        "width": (726 - 678) / 1920,
+        "height": (421 - 385) / 1080
     },
 
-    "METRO_CITY": {
-        "left": 675,
-        "top": 363,
-        "width": 732 - 675,    # 57
-        "height": 423 - 363    # 60
+    "Speed Jungle": {
+        "left": 934 / 1920,
+        "top": 176 / 1080,
+        "width": (990 - 934) / 1920,
+        "height": (236 - 176) / 1080
     },
-    "COOL EDGE": {
-        "left": 934,
-        "top": 176,
-        "width": 990 - 934,    # 56
-        "height": 236 - 176    # 60
-    }, 
+    "No Place": {
+        "left": 1190 / 1920,
+        "top": 360 / 1080,
+        "width": (1247 - 1190) / 1920,
+        "height": (422 - 360) / 1080
+    },
+    "Cyber Station": {
+        "left": 1091 / 1920,
+        "top": 665 / 1080,
+        "width": (1148 - 1091) / 1920,
+        "height": (724 - 665) / 1080
+    },
+    "New Yoke": {
+        "left": 673 / 1920,
+        "top": 361 / 1080,
+        "width": (731 - 673) / 1920,
+        "height": (425 - 361) / 1080
+    },
+
+    "Metro City": {
+        "left": 675 / 1920,
+        "top": 363 / 1080,
+        "width": (732 - 675) / 1920,
+        "height": (423 - 363) / 1080
+    },
+
+    "Cool Edge": {
+        "left": 934 / 1920,
+        "top": 176 / 1080,
+        "width": (990 - 934) / 1920,
+        "height": (236 - 176) / 1080
+    },
 }
 
 
 
 ZONES_PAGE_NUMBER = {
     "Green Hill": 0,
-    "Lost City": 0,
+    "Lost Valley": 0,
     "Emerald Hill": 0,
     "City Escape": 0,
     "Hill Top": 0,
