@@ -1,4 +1,3 @@
-
 import mss
 from PIL import Image, ImageChops
 import time
@@ -22,8 +21,9 @@ import constants
 # ==========================
 
 screen_width, screen_height = pyautogui.size()
+scale_x, scale_y = (screen_width / 1920), (screen_height / 1080)
 ahk_process = None
-
+current_page = None
 
 # ==========================
 # Player Setup / Portal Detection
@@ -76,11 +76,23 @@ def save_portal_coordinates(x, y):
     with open("../ahk/portal_coordinates.ini", "w") as f:
         portal_coordinate_file.write(f) # Here we dont use f.write because configparses has its own built in ".write" function that automatically write the INI file syntax for you,
 
+
+
 def find_player_portal_button():
 
     focus_roblox_window()
 
+    # This turns the file into a numpy array
     template = cv2.imread("../screenshots/portal_button.png")
+
+    # Scale the based of the individual users resolution
+    template = cv2.resize(
+        template,
+        None,
+        fx=scale_x,
+        fy=scale_y,
+        interpolation=cv2.INTER_LINEAR
+    )
 
     with mss.MSS() as sct:
 
@@ -90,30 +102,31 @@ def find_player_portal_button():
             "width": screen_width,
             "height": screen_height - int(constants.POSSIBLE_PORTAL_LOCATION_HEIGHT_RATIO * screen_height)
         }
-
+        print(f"[DEBUG] Screen capture region: {screen}")
         screenshot = sct.grab(screen) # This returns a screenshot.Screenshot objects containing varios data about the iamge.
-
+        print(f"[DEBUG] Screenshot captured. Size: {screenshot.size}")
         screenshot_pixels = np.array(screenshot) # The way np can conver the screnshot to an array of pixel values it because the screenshot object provides a way to be converted into an array. {__array__ or maybe __buffer__}
+        print(f"[DEBUG] Screenshot array shape: {screenshot_pixels.shape}")        
 
         # Remove the alpha channel because mss returns BGRA and also we dont want transparency to affect out search. If we move in game that could affect the pixels with alpha in them.
         screenshot_pixels = cv2.cvtColor(
             screenshot_pixels,
             cv2.COLOR_BGRA2BGR
         )
-
+        print(f"[DEBUG] Converted screenshot shape: {screenshot_pixels.shape}")
         result = cv2.matchTemplate( # This returns a grid/matrix of all points that it checked and its similarity value. Out chosen comparison method {TM_CCOEFF_NORMED} returns 1.0 if its a perfect match and 0.0 if its not.
             screenshot_pixels,
             template,
             cv2.TM_CCOEFF_NORMED
         )
 
+        print(f"[DEBUG] Template matching complete. Result shape: {result.shape}")
 
         # minMaxLoc returns the min_value, max_value, where the minimum happened, and where the maximum happened.
         # Since we only care the best score we only take the 2n and 4th value that the method returns and we name the 2nd {confidence} because that is how confident cv2 is that its the same picture
         _, confidence, _, location = cv2.minMaxLoc(result) 
         # Also. Location returns the top left corner of the match it found from the {screen} area we checked. So if we checked 1920, 90 it could return 1300, 34 But those obviouslt arent the screen coordinates.
         # We need to turn them into the real screen coordinates.
-
 
         if confidence > 0.90:
             real_x = location[0] # location[0] is the x value of the tuple location
@@ -122,10 +135,12 @@ def find_player_portal_button():
             # We know the image will be. We know it will be at the bottom somewhere anywhere along the x axis but always after y = 1040. Now cropped region will be 1920, 40. When we run cv2 on this image,
             # It will return something like 1500, 10. Because top of image starts at y = 0. Now to get the real coordinates back we need to add 10 + 1040. So now we get the real screen coordinates
             print(f"Located portal travel button at: {real_x}, {real_y}")
-            save_portal_coordinates(real_x / 1920, real_y / 1080)
+            save_portal_coordinates(real_x / screen_width, real_y / screen_height)
             print("Saved button coordinates inside ini file.")
 
         else:
+            print("[WARNING] Portal button not found.")
+            print(f"[DEBUG] Highest confidence was only {confidence:.4f}")
             print("Travel button not found. Do you have Fast Travel activated in the game settings?")
 
 
@@ -135,41 +150,62 @@ def find_player_portal_button():
 # Image Comparison
 # ==========================
 
-def image_similarity(image1, image2, threshold=2):
 
-    difference = ImageChops.difference(image1, image2)
+def ensure_numpy(image):
+    if isinstance(image, Image.Image):
+        result = np.array(image)
 
-    difference_np_array = np.array(difference)
+    return result
 
-    average_pixel_difference = difference_np_array.mean()
 
-    print(average_pixel_difference, image1, image2)
+def is_image_similar(screenshot, template, threshold=0.9):
 
-    return average_pixel_difference < threshold
+    screenshot = ensure_numpy(screenshot)
+    template = ensure_numpy(template)
+
+    result = cv2.matchTemplate( # This returns a grid/matrix of all points that it checked and its similarity value. Our chosen comparison method {TM_CCOERR_NORMED} returns 1.0 if its a perfect match and 0.0 if its not.
+        screenshot,
+        template,
+        cv2.TM_CCORR_NORMED
+    )
+
+    _, confidence, _, _  = cv2.minMaxLoc(result)
+
+    print(confidence)
+    return confidence > threshold
+
 
 
 # ==========================
 # Screenshot Analysis
 # ==========================
 
-def portal_page_check(zone):
+def portal_page_distance_check_and_command_send(zone):
+    global current_page
 
+    # If we are already on the page we want to get to just send the {zone} straight away and skin the page check and distance
+    if current_page is not None and current_page == constants.ZONES_PAGE_NUMBER[zone]:
+        return 0
 
-    next_counter = 0 # Amount of "Next" buttons we need to press to get to out desired page
+    
     folders = [
         Path("../screenshots/portal_screenshots"),
         Path("../screenshots/portal_locked_screenshots")
     ]
 
-    zone_string = zone.lower().replace(" ", "_") # Make text lower and replace white space with _. So "Green Hill" becomes "green_hill"
-
     # This code is to check what page we are currently on. So we just cehck the first location of every page. {The top portal}
     for folder in folders:
         for file in folder.iterdir(): # Creates iterable containing all files in that folder
 
-            portal_name = file.name.replace("_portal.png", "").upper() # Removed "_portal" from filename and makes it capitalized so I can access the constants.
+            print(f"Checking file {file.name}")
+            if folder.name == "portal_locked_screenshots":
+                portal_name = file.name.replace("_portal_locked.png", "").upper() # Removed "_portal.png" from filename and makes it capitalized so I can access the constants.
+            else:
+                portal_name = file.name.replace("_portal.png", "").upper() # Removed "_portal.png" from filename and makes it capitalized so I can access the constants.
+
+
             command_name = portal_name.replace("_", " ").title() # This basically converts "green_hill" into "Green Hill"
-            zone_portal_coordinates = constants.PORTAL_COORDINATES[portal_name]
+            zone_portal_coordinates = constants.ZONE_BUTTON_COORDINATES[command_name]
 
             with mss.MSS() as sct:
 
@@ -180,44 +216,67 @@ def portal_page_check(zone):
                     "height": int(zone_portal_coordinates["height"] * screen_height)
                 }
 
+                print(screen)
+
                 screenshot = sct.grab(screen)
 
-                image = Image.frombytes(
+                image = Image.frombytes( # Screenshot of the portal we are comparing from in game.
                     "RGB",
                     screenshot.size,
                     screenshot.rgb
                 )
 
-                page_distance = constants.ZONES_PAGE_NUMBER[zone] - constants.ZONES_PAGE_NUMBER[command_name] 
+            portal_image = Image.open(file) # Image of portal we are currently on to compare.
+            portal_image = resize_PIL_image(portal_image)
+
+            portal_image.save("debug_template.png")
+            image.save("debug_screenshot.png")
 
 
-                if image_similarity(portal_image, image):
+            # If the current portal we are checking is the same as the screenshot we took
+            if is_image_similar(portal_image, image):
+                page_distance = constants.ZONES_PAGE_NUMBER[zone] - constants.ZONES_PAGE_NUMBER[command_name]
+                current_page = constants.ZONES_PAGE_NUMBER[zone]
+                return page_distance
+            else:
+                continue
 
-                    if "locked" not in file.name:
-                        return page_distance
 
-                    if zone == command_name:
-                        print(f"{command_name} is currently locked.")
-                        return None
+            # if is_portal_locked(zone):
+            #     print(f"{zone} portal is currently locked. Choose a different zone")
+            # else:
+            #     return True
 
-                    return page_distance
-                    
-   
+
+def resize_PIL_image(image):
+    new_width = int(image.width * scale_x)
+    new_height = int(image.height * scale_y)
     
+    portal_image = image.resize(
+        (new_width, new_height),
+        Image.Resampling.BILINEAR
+    )
+
+    return portal_image
 
 
+# Checks if the chosen {zone} portal is locked
+def is_portal_locked(zone):
 
 
-def portal_is_locked(zone):
+    portal_locked = f"../screenshots/portal_locked_screenshots/{zone.replace(' ', '_').lower()}_portal_locked.png"
+    portal_unlocked = f"../screenshots/portal_screenshots/{zone.replace(' ', '_').lower()}_portal.png"
 
 
-    file_name = f"{zone.replace(' ', '_').lower()}_locked_portal.png"
+    portal_locked = resize_PIL_image(Image.open(portal_locked))
+    portal_unlocked = resize_PIL_image(Image.open(portal_unlocked))
+
     with mss.MSS() as sct:
 
         screen = {
-            "left": int(constants.ZONE_BUTTON_COORDINATES[zone]["left"] * screen_height),
+            "left": int(constants.ZONE_BUTTON_COORDINATES[zone]["left"] * screen_width),
             "top": int(constants.ZONE_BUTTON_COORDINATES[zone]["top"] * screen_height),
-            "width": int(constants.ZONE_BUTTON_COORDINATES[zone]["width"] * screen_height),
+            "width": int(constants.ZONE_BUTTON_COORDINATES[zone]["width"] * screen_width),
             "height": int(constants.ZONE_BUTTON_COORDINATES[zone]["height"] * screen_height)
         } 
 
@@ -229,22 +288,18 @@ def portal_is_locked(zone):
             screenshot.rgb
         )
 
-        portal_screenshot = Image.open(f"../screenshots/portal_locked_screenshots/{file_name}")
-        if image_similarity(image, portal_screenshot):
-            print(f"{zone} is currently locked. Please choose another zone.")
+        # portal_screenshot = Image.open(f"../screenshots/portal_locked_screenshots/{file_name}")
+        if is_image_similar(image, portal_locked) == True:
             return True
+
         
+        if is_image_similar(image, portal_unlocked) == True:
+            return False
 
-        return False
+        print(f"Wrong zone. {zone}")
 
-
-
-
-
-
-
-
-
+        return
+        
 
 
 
@@ -271,7 +326,11 @@ def take_screenshot_and_analyze_level():
             "../screenshots/level_bar_section.png"
         )
 
-        if image_similarity(image, level_screenshot):
+        level_screenshot = resize_PIL_image(level_screenshot)
+
+
+
+        if is_image_similar(image, level_screenshot):
             print("Detected max level. Rebirth available")
             return True
         else:
@@ -301,6 +360,8 @@ def take_screenshot_and_analyze_egg():
             "../screenshots/egg_notification.png"
         )
 
+        egg_screenshot = resize_PIL_image(egg_screenshot)
+
         if list(image.getdata()) == list(egg_screenshot.getdata()):
             print("Detected egg notification")
             return True
@@ -327,8 +388,9 @@ def auto_run_entered_check(zone):
         )
 
         x_screenshot = Image.open("../screenshots/x_symbol.png")
+        x_screenshot = resize_PIL_image(x_screenshot)
 
-        if not image_similarity(image, x_screenshot):
+        if not is_image_similar(image, x_screenshot):
             print(f"Auto-run zone has not succesfully been entered. Sending the command {zone} again.")
             send_command(zone)
 
@@ -340,28 +402,27 @@ def send_command(command):
     global rebirthing_in_progress
     page_distance = None
 
-
-    if command in constants.ZONES:
+    print(command)
+    if command in constants.ZONE_BUTTON_COORDINATES:
         send_command("Click_Portal") 
+        print("CLICKED PORTAL BUTTON")
         # This will send a command to click the portal button. The code will be stuck on this until it recieved a done.txt.
         # I will then detect what page we are on and change to the right one if the player is not on it. And then I will check if the player has that place unlocked.
 
-        distance = portal_page_check(command)
+        page_distance = portal_page_distance_check_and_command_send(command)
 
-        if distance is None:
+        send_command(page_distance)
+
+        if is_portal_locked(command):
+            print(f"Current {command} is locked. Please choose a diffrent zone")
             send_command("Close_Portal")
-            return 
-        page_distance = distance
+            return
+            
 
-    
 
     with open("../command.txt", "w") as f:
         print(f"Sending command: {command}")
         f.write(f"{command}")
-        
-        if page_distance is not None and page_distance != 0: # We check if its non None so in case page_distance is 0 
-            f.write(f"\n{page_distance}")
-
 
 
     print(f"Checking if ahk has finished performing command: {command}")
