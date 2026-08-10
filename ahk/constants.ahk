@@ -39,6 +39,18 @@ BACK_BUTTON_PORTAL_X := Round((775/2880) * screenWidth)
 BACK_BUTTON_PORTAL_Y := Round((731/1620) * screenHeight)
 
 
+;Setting buttons
+
+SETTINGS_BUTTON_X := Round((2836 / 2880) * screenWidth)
+SETTINGS_BUTTON_Y := Round((58 / 1620) * screenHeight)
+
+SETTINGS_X_BUTTON_X := Round((2182 / 2880) * screenWidth)
+SETTINGS_X_BUTTON_Y := Round((211 / 1620) * screenHeight)
+
+SPEED_TEXTBOX_X := Round((1844 / 2880) * screenWidth)
+SPEED_TEXTBOX_Y := Round((440 / 1620) * screenHeight)
+
+
 
 ;Egg claim buttons
 EGG_NOTIFICATION_X := Round((189 / 1920) * screenWidth)
