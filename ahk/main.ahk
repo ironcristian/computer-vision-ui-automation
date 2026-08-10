@@ -52,7 +52,11 @@ Loop
                 Page_Change(command)
                 ClearCommand()
             }
-            else
+            else if command = "Set_Speed" {
+                Set_Speed_To_1()
+                ClearCommand()
+            }
+            else    
             {
                 current_zone := command ; Command in this case will be a zone name
                 Choose_Walk(command)
@@ -163,6 +167,30 @@ Page_Change(page_distance)
 
 }
 
+Set_Speed_To_1()
+{
+
+    global SETTINGS_BUTTON_X, SETTINGS_BUTTON_Y, SETTINGS_X_BUTTON_X, SETTINGS_X_BUTTON_Y, SPEED_TEXTBOX_X, SPEED_TEXTBOX_Y
+
+    MouseClick("left", SETTINGS_BUTTON_X, SETTINGS_BUTTON_Y)
+    Sleep 200
+
+    MouseMove(screenWidth * 0.5, screenHeight * 0.5)
+
+    Send "{WheelUp 70}"
+    Sleep 100
+   
+    MouseClick("left", SPEED_TEXTBOX_X, SPEED_TEXTBOX_Y)
+    Sleep 100
+
+    Send "{1}"
+    Sleep 300
+
+    MouseClick("left", SETTINGS_X_BUTTON_X, SETTINGS_X_BUTTON_Y)
+
+}
+
+
 ;----------------------------------------------------------------------------------
 ;--------------LOST CITY WALK AND TELEPORTATION FUNCTIONS------------------------
 ;----------------------------------------------------------------------------------
@@ -171,19 +199,14 @@ Lost_City_Walk()
     Zoom_Out()
     global YES_X, YES_Y
     ;Walk to Auto-Run area
-    Sleep 1000
-    Send "{w down}"
-    Sleep 200
-    Send "{w up}"
-    Sleep 100
 
     Send "{d down}"
-    Sleep 1700
+    Sleep 3000
     Send "{d up}"
-    Sleep 200
+    Sleep 400
 
     Send "{s down}"
-    Sleep 800
+    Sleep 1500
     Send "{s up}"
     Sleep 200
 
