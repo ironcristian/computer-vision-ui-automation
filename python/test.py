@@ -3,6 +3,7 @@ import pyautogui
 from PIL import Image
 
 screen_width, screen_height = pyautogui.size()
+print(screen_height, screen_width)
 
 ZONE_BUTTON_COORDINATES = {
     "Cool Edge": {
@@ -31,7 +32,7 @@ with mss.MSS() as sct:
             screenshot.rgb
         )
 
-        filename = f"{zone.lower().replace(' ', '_')}_portal.png"
+        filename = f"{zone.lower().replace(' ', '_')}_portalsssssss.png"
         image.save(filename)
 
         print(f"Saved {filename}")
