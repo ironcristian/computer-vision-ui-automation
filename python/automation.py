@@ -31,8 +31,14 @@ current_page = None
 
 def start_player_setup():
     print("Starting setup.")
+
     find_player_portal_button()
-    print("Located portal travel button.")
+  
+    start_ahk_script()
+
+    set_speed()
+
+    
 
 
 
@@ -80,6 +86,7 @@ def save_portal_coordinates(x, y):
 
 def find_player_portal_button():
 
+    print("Locating portal travel button")
     focus_roblox_window()
 
     # This turns the file into a numpy array
@@ -144,7 +151,10 @@ def find_player_portal_button():
             print("Travel button not found. Do you have Fast Travel activated in the game settings?")
 
 
-
+def set_speed():
+    print("Setting speed.")
+    send_command("Set_Speed")
+    print("Set speed.")
 
 # ==========================
 # Image Comparison
@@ -153,9 +163,9 @@ def find_player_portal_button():
 
 def ensure_numpy(image):
     if isinstance(image, Image.Image):
-        result = np.array(image)
+        return np.array(image)
 
-    return result
+    return image
 
 
 def is_image_similar(screenshot, template, threshold=0.9):
@@ -199,7 +209,7 @@ def portal_page_distance_check_and_command_send(zone):
 
             print(f"Checking file {file.name}")
             if folder.name == "portal_locked_screenshots":
-                portal_name = file.name.replace("_portal_locked.png", "").upper() # Removed "_portal.png" from filename and makes it capitalized so I can access the constants.
+                portal_name = file.name.replace("_portal_locked.png", "").upper() # Removed "_portal_locked.png" from filename and makes it capitalized so I can access the constants.
             else:
                 portal_name = file.name.replace("_portal.png", "").upper() # Removed "_portal.png" from filename and makes it capitalized so I can access the constants.
 
@@ -229,12 +239,22 @@ def portal_page_distance_check_and_command_send(zone):
             portal_image = Image.open(file) # Image of portal we are currently on to compare.
             portal_image = resize_PIL_image(portal_image)
 
-            portal_image.save("debug_template.png")
-            image.save("debug_screenshot.png")
 
+            if file.name == "metro_city_portal.png":
+                portal_image.save("debug_template.png")
+                image.save("debug_screenshot.png")
+
+                portal_cv = cv2.cvtColor(np.array(portal_image), cv2.COLOR_RGB2BGR)
+                image_cv = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
+
+                diff = cv2.absdiff(portal_cv, image_cv)
+                cv2.imwrite("difference.png", diff)
+
+        
 
             # If the current portal we are checking is the same as the screenshot we took
-            if is_image_similar(portal_image, image):
+            threshold = 0.95 if "locked" in file.name else 0.90
+            if is_image_similar(portal_image, image, threshold):
                 page_distance = constants.ZONES_PAGE_NUMBER[zone] - constants.ZONES_PAGE_NUMBER[command_name]
                 current_page = constants.ZONES_PAGE_NUMBER[zone]
                 return page_distance
@@ -254,7 +274,7 @@ def resize_PIL_image(image):
     
     portal_image = image.resize(
         (new_width, new_height),
-        Image.Resampling.BILINEAR
+        Image.Resampling.LANCZOS
     )
 
     return portal_image
@@ -434,9 +454,6 @@ def send_command(command):
     os.remove("../done.txt")
     print("Done file deleted:", not os.path.exists("../done.txt"))
 
-    if command == "Rebirth":
-        print("Rebirth no longer in progress")
-        rebirthing_in_progress = False
 
 
 def clear_command_and_close_ahk():
@@ -458,7 +475,6 @@ last_xp_claim = time.time()
 last_image_analysis = time.time()
 last_egg_check = time.time()
 
-rebirthing_in_progress = False
 
 
 # ==========================
@@ -467,13 +483,10 @@ rebirthing_in_progress = False
 
 def begin_automation(zone):
     
-    global last_level_change, last_xp_claim, last_image_analysis, last_egg_check, rebirthing_in_progress
+    global last_level_change, last_xp_claim, last_image_analysis, last_egg_check
 
-    if rebirthing_in_progress:
-        rebirthing_in_progress = False
 
     start_player_setup()
-    start_ahk_script()
 
     print(f"Setting up {zone}")
     send_command(zone)
@@ -505,17 +518,15 @@ def begin_automation(zone):
         if current_time - last_image_analysis >= 5:
             result = take_screenshot_and_analyze_level()
 
-
             if not result:
                 last_level_change = current_time
 
 
             else:
-                if current_time - last_level_change > 30 and not rebirthing_in_progress:
+                if current_time - last_level_change > 30:
 
                     print("Starting Rebirth")
                     send_command("Rebirth") # We check if we entered the auto-run area becuase at the end of Rebirth we walk back to auto-run area.
-                    rebirthing_in_progress = True
                     print("Rebirth in progress")
                     print("Checking if auto-run zone has been succesfully entered.")
                     auto_run_entered_check(zone)
