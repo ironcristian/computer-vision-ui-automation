@@ -1,38 +1,27 @@
-import mss
-import pyautogui
-from PIL import Image
+import cv2
 
-screen_width, screen_height = pyautogui.size()
-print(screen_height, screen_width)
+image1 = cv2.imread("cool_edge_portalsssssss.png")
+image2 = cv2.imread("cool_edge_portals1.png")
 
-ZONE_BUTTON_COORDINATES = {
-    "Cool Edge": {
-        "left": 934 / 1920,
-        "top": 176 / 1080,
-        "width": (990 - 934) / 1920,
-        "height": (236 - 176) / 1080
-    }
-}
+if image1 is None or image2 is None:
+    raise FileNotFoundError("Could not find one or both images.")
 
-with mss.MSS() as sct:
-    for zone, coords in ZONE_BUTTON_COORDINATES.items():
+print("Image 1:", image1.shape)
+print("Image 2:", image2.shape)
 
-        screen = {
-            "left": int(coords["left"] * screen_width),
-            "top": int(coords["top"] * screen_height),
-            "width": int(coords["width"] * screen_width),
-            "height": int(coords["height"] * screen_height)
-        }
+result = cv2.matchTemplate(
+    image2,
+    image1,
+    cv2.TM_CCORR_NORMED
+)
 
-        screenshot = sct.grab(screen)
+_, similarity, _, location = cv2.minMaxLoc(result)
 
-        image = Image.frombytes(
-            "RGB",
-            screenshot.size,
-            screenshot.rgb
-        )
+print(f"Similarity: {similarity:.6f}")
+print(f"Best location: {location}")
 
-        filename = f"{zone.lower().replace(' ', '_')}_portalsssssss.png"
-        image.save(filename)
+# Save visual difference
+diff = cv2.absdiff(image1, image2)
+cv2.imwrite("cool_edge_difference.png", diff)
 
-        print(f"Saved {filename}")
+print("Saved cool_edge_difference.png")
