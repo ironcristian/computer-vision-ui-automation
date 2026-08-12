@@ -56,10 +56,15 @@ Loop
                 Set_Speed_To_1()
                 ClearCommand()
             }
+            else if SubStr(command, -7) = "_portal"
+            {
+                Choose_Portal(command)
+                ClearCommand()
+            }
             else    
             {
                 current_zone := command ; Command in this case will be a zone name
-                Choose_Walk(command)
+                Walk_to(command)
                 ClearCommand()
             }
         }
@@ -86,16 +91,16 @@ Rebirth()
     ; In this version variables need to be declared global inside functions unless defined INSIDE the function
     global current_zone, CLOSE_X, CLOSE_Y, YES_X, YES_Y, REBIRTH_BUTTON_X, REBIRTH_BUTTON_Y, REBIRTH_PRICE_X, REBIRTH_PRICE_Y
     MouseClick("Left", CLOSE_X, CLOSE_Y)     ;Click Close button
-    Sleep 1500
+    Sleep 1000
 
     MouseClick("Left", YES_X, YES_Y)     ;Click Yes
-    Sleep 1500
+    Sleep 1000
 
     MouseClick("Left", REBIRTH_BUTTON_X, REBIRTH_BUTTON_Y)      ;Click rebirth button
-    Sleep 1500
+    Sleep 500
     
     MouseClick("Left", REBIRTH_PRICE_X, REBIRTH_PRICE_Y)     ;Click rebirth price button
-    Sleep 2000
+    Sleep 1000
 
     Walk_To(current_zone)
 }
@@ -116,7 +121,38 @@ Click_Portal()
 
 }
 
+Choose_Portal(zone)
+{
+    switch zone
+    {
+        case "Green_Hill_Portal":
+            Green_Hill_Portal()
 
+        case "Lost_Valley_Portal":
+            Lost_Valley_Portal()
+
+        case "Emerald_Hill_Portal":
+            Emerald_Hill_Portal()
+
+        case "Hill_Top_Portal":
+            Hill_Top_Portal()
+
+        case "Speed_Jungle_Portal":
+            Speed_Jungle_Portal()
+
+        case "No_Place_Portal":
+            No_Place_Portal()
+
+        case "Cyber_Station_Portal":
+            Cyber_Station_Portal()
+
+        case "New_Yoke_Portal":
+            New_Yoke_Portal()
+
+        case "Metro_City":
+            Metro_City_Portal()
+    }
+}
 
 Claim_EGG()
 {
@@ -184,7 +220,7 @@ Set_Speed_To_1()
     Sleep 100
 
     Send "{1}"
-    Sleep 300
+    Sleep 100
 
     MouseClick("left", SETTINGS_X_BUTTON_X, SETTINGS_X_BUTTON_Y)
 
@@ -194,7 +230,7 @@ Set_Speed_To_1()
 ;----------------------------------------------------------------------------------
 ;--------------LOST CITY WALK AND TELEPORTATION FUNCTIONS------------------------
 ;----------------------------------------------------------------------------------
-Lost_City_Walk()
+Lost_Valley_Walk()
 {
     Zoom_Out()
     global YES_X, YES_Y
@@ -212,24 +248,22 @@ Lost_City_Walk()
 
 
     MouseClick("Left", YES_X, YES_Y)      ;Click Yes
-    Sleep 2000
+    Sleep 3500
 }
 
 ;Teleports the player to Lost City zone
-Lost_City_Portal()
+Lost_Valley_Portal()
 {
     
-    global LOST_CITY_BUTTON_X, LOST_CITY_BUTTON_Y, TRAVEL_BUTTON_X, TRAVEL_BUTTON_Y, YES_X, YES_Y
+    global LOST_VALLEY_BUTTON_X, LOST_VALLEY_BUTTON_Y, TRAVEL_BUTTON_X, TRAVEL_BUTTON_Y, YES_X, YES_Y
 
-    MouseClick("Left", LOST_CITY_BUTTON_X, LOST_CITY_BUTTON_Y)  ;Click the zone we want to go to
-    Sleep 300
+    MouseClick("Left", LOST_VALLEY_BUTTON_X, LOST_VALLEY_BUTTON_Y)  ;Click the zone we want to go to
+    Sleep 150
 
     MouseClick("Left", TRAVEL_BUTTON_X, TRAVEL_BUTTON_Y)    ;Click the green travel button that will teleport the player there
-    Sleep 300
+    Sleep 150
 
     MouseClick("Left", YES_X, YES_Y)
-    Sleep 10000
-
 
 }
 
@@ -241,20 +275,18 @@ Emerald_Hill_Walk()
     Zoom_Out()
     global YES_X, YES_Y
 
-    Sleep 1000
     Send "{d down}"
-    Sleep 1500
+    Sleep 2500
     Send "{d up}"
     Sleep 100
 
     Send "{s down}"
-    Sleep 1000
+    Sleep 2000
     Send "{s up}"
-    Sleep 1000
+    Sleep 100
 
     MouseClick("Left", YES_X, YES_Y)      ;Click Yes
-    Sleep 2000
-
+    Sleep 3500 ; Short delay to make the Auto-Run UI pop up
 
 }
 
@@ -266,19 +298,18 @@ Emerald_Hill_Portal()
 
     
     MouseClick("Left", EMERALD_HILL_BUTTON_X, EMERALD_HILL_BUTTON_Y)  ;Click the zone we want to go to
-    Sleep 300
+    Sleep 150
 
     MouseClick("Left", TRAVEL_BUTTON_X, TRAVEL_BUTTON_Y)    ;Click the green travel button that will teleport the player there
-    Sleep 300
+    Sleep 150
 
     MouseClick("Left", YES_X, YES_Y)
-    Sleep 10000
 
 }
 
 
 ;----------------------------------------------------------------------------------
-;--------------GEEN HILL WALK AND TELEPORTATION FUNCTIONS--------------------------
+;--------------GREEN HILL WALK AND TELEPORTATION FUNCTIONS--------------------------
 ;----------------------------------------------------------------------------------
 
 
@@ -287,29 +318,18 @@ Green_Hill_Walk()
     Zoom_Out()
     global YES_X, YES_Y
 
-    Sleep 1000
-    Send "{d down}"
-    Sleep 800
-    Send "{d up}"
-    Sleep 200
-
-    Sleep 200
     Send "{s down}"
-    Sleep 1300
+    Sleep 4000
     Send "{s up}"
+    Sleep 200
+  
+    Send "{d down}"
+    Sleep 3000
+    Send "{d up}"
     Sleep 300
 
-    Send "{d down}"
-    Sleep 1800
-    Send "{d up}"
-
-    Send "{s down}"
-    Sleep 2500
-    Send "{s up}"
-    Sleep 500
-
     MouseClick("Left", YES_X, YES_Y)      ;Click Yes
-    Sleep 2000
+    Sleep 3500
 }
 
 Green_Hill_Portal()
@@ -318,19 +338,18 @@ Green_Hill_Portal()
     global GREEN_HILL_BUTTON_X, GREEN_HILL_BUTTON_Y, TRAVEL_BUTTON_X, TRAVEL_BUTTON_Y, YES_Y, YES_X
 
     MouseClick("Left", GREEN_HILL_BUTTON_X, GREEN_HILL_BUTTON_Y)
-    Sleep 300
+    Sleep 150
 
     MouseClick("Left", TRAVEL_BUTTON_X, TRAVEL_BUTTON_Y)
-    Sleep 300
+    Sleep 150
 
     MouseClick("Left", YES_X, YES_Y)
-    Sleep 10000
 
 }
 
 
 ;----------------------------------------------------------------------------------
-;--------------GEEN HILL WALK AND TELEPORTATION FUNCTIONS--------------------------
+;--------------HILL TOP WALK AND TELEPORTATION FUNCTIONS--------------------------
 ;----------------------------------------------------------------------------------
 
 
@@ -340,7 +359,6 @@ Hill_Top_Walk()
     Zoom_Out()
     global YES_X, YES_Y
 
-    Sleep 1000
     Send "{w down}"
     Sleep 400
     Send "{w up}"
@@ -362,71 +380,192 @@ Hill_Top_Walk()
     Sleep 400
 
     MouseClick("Left", YES_X, YES_Y)      ;Click Yes
-    Sleep 2000
+    Sleep 3500
 }
 
 Hill_Top_Portal()
 {
-    global portal_button_x, portal_button_y, HILL_TOP_BUTTON_X, HILL_TOP_BUTTON_Y, TRAVEL_BUTTON_X, TRAVEL_BUTTON_Y, YES_Y, YES_X
-
-    MouseClick("Left", portal_button_x, portal_button_y)    ;Click the portal travel button
-    Sleep 300
+    global HILL_TOP_BUTTON_X, HILL_TOP_BUTTON_Y, TRAVEL_BUTTON_X, TRAVEL_BUTTON_Y, YES_Y, YES_X
 
     MouseClick("Left", HILL_TOP_BUTTON_X, HILL_TOP_BUTTON_Y)
-    Sleep 300
+    Sleep 150
 
     MouseClick("Left", TRAVEL_BUTTON_X, TRAVEL_BUTTON_Y)
-    Sleep 300
+    Sleep 150
 
     MouseClick("Left", YES_X, YES_Y)
-    Sleep 10000
+
 }
 
 
-; Teleport o chosen zone and walk to auto-run
-Choose_Walk(zone)
+;----------------------------------------------------------------------------------
+;--------------SPEED JUNGLE WALK AND TELEPORTATION FUNCTIONS--------------------------
+;----------------------------------------------------------------------------------
+
+Speed_Jungle_Walk()
 {
-    if zone = "Green Hill"
-    {
-        Green_Hill_Portal()
-        Green_Hill_Walk()
-    }
-    else if zone = "Emerald Hill"
-    {
-        Emerald_Hill_Portal()
-        Emerald_Hill_Walk()
-    }
-    else if zone = "Lost Valley"
-    {
-        Lost_City_Portal()
-        Lost_City_Walk()
-    }
-    else if zone = "Hill Top"
-    {
-        Hill_Top_Portal()
-        Hill_Top_Walk()
-    }
+    Zoom_Out()
+    global YES_X, YES_Y
+
+    Send "{w down}"
+    Sleep 2500
+    Send "{w up}"
+    Sleep 200
+
+    Send "{d down}"
+    Sleep 6000
+    Send "{d up}"
+    Sleep 400
+
+    Send "{s down}"
+    Sleep 1700
+    Send "{s up}"
+    Sleep 200
+
+    Send "{d down}"
+    Sleep 3000
+    Send "{d up}"
+    Sleep 200
+
+    MouseClick("Left", YES_X, YES_Y)      ;Click Yes
+    Sleep 3500
+}
+
+Speed_Jungle_Portal()
+{
+    global SPEED_JUNGLE_BUTTON_X, SPEED_JUNGLE_BUTTON_X, TRAVEL_BUTTON_X, TRAVEL_BUTTON_Y, YES_Y, YES_X
+
+    MouseClick("Left", SPEED_JUNGLE_BUTTON_X, SPEED_JUNGLE_BUTTON_Y)
+    Sleep 150
+
+    MouseClick("Left", TRAVEL_BUTTON_X, TRAVEL_BUTTON_Y)
+    Sleep 150
+
+    MouseClick("Left", YES_X, YES_Y)
+}
+
+;----------------------------------------------------------------------------------
+;--------------NO PLACE WALK AND TELEPORTATION FUNCTIONS--------------------------
+;----------------------------------------------------------------------------------
+
+No_Place_Walk()
+{
 
 }
+
+No_Place_Portal()
+{
+    global NO_PLACE_BUTTON_X, NO_PLACE_BUTTON_Y, TRAVEL_BUTTON_X, TRAVEL_BUTTON_Y, YES_Y, YES_X
+
+    MouseClick("Left", NO_PLACE_BUTTON_X, NO_PLACE_BUTTON_Y)
+    Sleep 150
+
+    MouseClick("Left", TRAVEL_BUTTON_X, TRAVEL_BUTTON_Y)
+    Sleep 150
+
+    MouseClick("Left", YES_X, YES_Y)
+}
+
+;----------------------------------------------------------------------------------
+;--------------CYBER STATION WALK AND TELEPORTATION FUNCTIONS--------------------------
+;----------------------------------------------------------------------------------
+
+Cyber_Station_Walk()
+{
+
+}
+
+Cyber_Station_Portal()
+{
+    global CYBER_STATION_BUTTON_X, CYBER_STATION_BUTTON_Y, TRAVEL_BUTTON_X, TRAVEL_BUTTON_Y, YES_Y, YES_X
+
+    MouseClick("Left", CYBER_STATION_BUTTON_X, CYBER_STATION_BUTTON_Y)
+    Sleep 150
+
+    MouseClick("Left", TRAVEL_BUTTON_X, TRAVEL_BUTTON_Y)
+    Sleep 150
+
+    MouseClick("Left", YES_X, YES_Y)
+}
+
+;----------------------------------------------------------------------------------
+;--------------CYBER STATION WALK AND TELEPORTATION FUNCTIONS--------------------------
+;----------------------------------------------------------------------------------
+
+New_Yoke_Walk()
+{
+
+}
+
+New_Yoke_Portal()
+{
+    global NEW_YOKE_BUTTON_X, NEW_YOKE_BUTTON_Y, TRAVEL_BUTTON_X, TRAVEL_BUTTON_Y, YES_Y, YES_X
+
+    MouseClick("Left", NEW_YOKE_BUTTON_X, NEW_YOKE_BUTTON_Y)
+    Sleep 150
+
+    MouseClick("Left", TRAVEL_BUTTON_X, TRAVEL_BUTTON_Y)
+    Sleep 150
+
+    MouseClick("Left", YES_X, YES_Y)
+}
+
+
+;----------------------------------------------------------------------------------
+;--------------CYBER STATION WALK AND TELEPORTATION FUNCTIONS--------------------------
+;----------------------------------------------------------------------------------
+
+Metro_City_Walk()
+{
+
+}
+
+Metro_City_Portal()
+{
+    global METRO_CITY_BUTTON_X, METRO_CITY_BUTTON_Y, TRAVEL_BUTTON_X, TRAVEL_BUTTON_Y, YES_Y, YES_X
+
+    MouseClick("Left", METRO_CITY_BUTTON_X, METRO_CITY_BUTTON_Y)
+    Sleep 150
+
+    MouseClick("Left", TRAVEL_BUTTON_X, TRAVEL_BUTTON_Y)
+    Sleep 150
+
+    MouseClick("Left", YES_X, YES_Y)
+}
+
+
 
 ; Walk to auto-run area in chosen zone
 Walk_to(zone)
-{
-    if zone = "Green Hill"
+{   
+    switch zone
     {
+    case "Green Hill":
         Green_Hill_Walk()
-    }
-    else if zone = "Emerald Hill"
-    {
+
+    case "Lost Valley":
+        Lost_Valley_Walk()
+
+    case "Emerald Hill":
         Emerald_Hill_Walk()
-    }
-    else if zone = "Lost City"
-    {
-        Lost_City_Walk()
-    }
-    else if zone = "Hill Top"
-    {
+
+    case "Hill Top":
         Hill_Top_Walk()
+
+    case "Speed Jungle":
+        Speed_Jungle_Walk()
+
+    case "No Place":
+        No_Place_Walk()
+
+    case "Cyber Station":
+        Cyber_Station_Walk()
+
+    case "New Yoke":
+        New_Yoke_Walk()
+
+    case "Metro City":
+        Metro_City_Walk()
     }
 
 }
