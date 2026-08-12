@@ -72,8 +72,8 @@ TRAVEL_BUTTON_Y := Round((563 / 1080) * screenHeight)
 GREEN_HILL_BUTTON_X := Round((959 / 1920) * screenWidth)
 GREEN_HILL_BUTTON_Y := Round((202 / 1080) * screenHeight)
 
-LOST_CITY_BUTTON_X := Round((1216 / 1920) * screenWidth)
-LOST_CITY_BUTTON_Y := Round((396 / 1080) * screenHeight)
+LOST_VALLEY_BUTTON_X := Round((1216 / 1920) * screenWidth)
+LOST_VALLEY_BUTTON_Y := Round((396 / 1080) * screenHeight)
 
 EMERALD_HILL_BUTTON_X := Round((1119 / 1920) * screenWidth)
 EMERALD_HILL_BUTTON_Y := Round((702 / 1080) * screenHeight)
@@ -81,3 +81,17 @@ EMERALD_HILL_BUTTON_Y := Round((702 / 1080) * screenHeight)
 HILL_TOP_BUTTON_X := Round((701 / 1920) * screenWidth)
 HILL_TOP_BUTTON_Y := Round((396 / 1080) * screenHeight)
 
+SPEED_JUNGLE_BUTTON_X := Round((959 / 1920) * screenWidth)
+SPEED_JUNGLE_BUTTON_Y := Round((202 / 1080) * screenHeight)
+
+NO_PLACE_BUTTON_X := Round((1216 / 1920) * screenWidth)
+NO_PLACE_BUTTON_Y := Round((396 / 1080) * screenHeight)
+
+CYBER_STATION_BUTTON_X := Round((1119 / 1920) * screenWidth)
+CYBER_STATION_BUTTON_Y := Round((702 / 1080) * screenHeight)
+
+NEW_YOKE_BUTTON_X := Round((701 / 1920) * screenWidth)
+NEW_YOKE_BUTTON_Y := Round((396 / 1080) * screenHeight)
+
+METRO_CITY_BUTTON_X := Round((701 / 1920) * screenWidth)
+METRO_CITY_BUTTON_Y := Round((396 / 1080) * screenHeight)
